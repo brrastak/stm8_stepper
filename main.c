@@ -17,6 +17,7 @@
 #include "button.h"
 #include "encoder.h"
 #include "eeprom.h"
+#include "wdt.h"
 
 
 // Print num and '%' at display
@@ -37,34 +38,8 @@ int main()
     InitDisp();
     delay_ms(10);
     
-    //InitWdt();
-    
- /**   while (true) {
-        
-        // Check button and encoder state
-        if (sys_tick - btn_counter > 20) {  // every 1ms
-            
-            CheckBtn(&Btn);
-            CheckEncoder(&Enc);
-        }
-        // Button press proceed
-        if (WasPressed(&Btn)) {
-            
-            SaveAsDefaultValue(procent_value);
-        }
-        // Encoder rotation proceed
-        if (GetEncoderValue(&Enc) != procent_value) {
-            
-            procent_value = GetEncoderValue(&Enc);
-            disp_update = true;
-        }
-        // Update display
-        if (disp_update == true) {
-            
-            PrintPercent(procent_value);
-            disp_update = false;
-        }
-    }*/
+    InitWdt();
+   
     
     // Button (in encoder)
     btn_t Btn = {BTN_PIN, 0, 20, false, false, false};
@@ -102,6 +77,8 @@ int main()
     SetStepperControlMode(halfstep_mode, clockwise_dir);
     
     while (true) {
+        
+        ResetWdt();
         
         // Stepping
         if (sys_tick - step_counter > (800 / (procent_value+2) +2)) {
